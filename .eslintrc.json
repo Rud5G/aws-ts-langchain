@@ -58,6 +58,7 @@
         "devDependencies": [
           "**/test/**",
           "**/build-tools/**",
+          "src/langchain-stack.lambda.ts",
           ".projenrc.ts",
           "projenrc/**/*.ts"
         ],

@@ -11,7 +11,7 @@ yarn cdk bootstrap aws://$ACCOUNT_DEV_ID/us-east-1
 
 ## Deploy
 
-For deploying the stack directly. Please don't use if you know what you're doing!
+Load your AWS credentials into your shell environment like with your AWS SSO landing page like https://damadden.awsapps.com/start#/ .
 
 ```bash
 yarn cdk deploy "langchain-stack" --require-approval never

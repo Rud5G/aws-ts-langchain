@@ -26,7 +26,30 @@
     },
     "bundle": {
       "name": "bundle",
-      "description": "Prepare assets"
+      "description": "Prepare assets",
+      "steps": [
+        {
+          "spawn": "bundle:langchain-stack.lambda"
+        }
+      ]
+    },
+    "bundle:langchain-stack.lambda": {
+      "name": "bundle:langchain-stack.lambda",
+      "description": "Create a JavaScript bundle from src/langchain-stack.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/langchain-stack.lambda.ts --target=\"node16\" --platform=\"node\" --outfile=\"assets/langchain-stack.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:aws-sdk"
+        }
+      ]
+    },
+    "bundle:langchain-stack.lambda:watch": {
+      "name": "bundle:langchain-stack.lambda:watch",
+      "description": "Continuously update the JavaScript bundle from src/langchain-stack.lambda.ts",
+      "steps": [
+        {
+          "exec": "esbuild --bundle src/langchain-stack.lambda.ts --target=\"node16\" --platform=\"node\" --outfile=\"assets/langchain-stack.lambda/index.js\" --tsconfig=\"tsconfig.dev.json\" --external:aws-sdk --watch"
+        }
+      ]
     },
     "clobber": {
       "name": "clobber",

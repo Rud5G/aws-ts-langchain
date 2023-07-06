@@ -1,7 +1,7 @@
 import { awscdk } from 'projen';
 import { TrailingComma } from 'projen/lib/javascript';
 const project = new awscdk.AwsCdkTypeScriptApp({
-  cdkVersion: '2.84.0',
+  cdkVersion: '2.86.0',
   defaultReleaseBranch: 'main',
   name: 'aws-ts-langchain',
   projenrcTs: true,

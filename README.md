@@ -1,6 +1,6 @@
 # aws-ts-langchain
 
-This is the demo Repo for the AWS TS Language Chain Meetup in Lisbon. It uses the langchain TypeScript library.
+This is the demo Repo for the AWS TS Language Chain Meetup in Lisbon. It uses the [LangChain TypeScript library](https://github.com/hwchase17/langchainjs).
 
 ## Bootstrap
 
@@ -16,3 +16,14 @@ Load your AWS credentials into your shell environment like with your AWS SSO lan
 ```bash
 yarn cdk deploy "langchain-stack" --require-approval never
 ```
+
+After deploying you need to put your OpenAI Api Key into the AWS Secret named OpenAiKey...
+
+## What to improve
+
+* Don't save the OpenAI API Key as variable!
+* Use proper AWS Api Gateway for a proper REST API
+
+## Thx
+
+* Thanks to codebasics to provide the Python LangChain Video which I used <https://www.youtube.com/watch?v=nAmC7SoVLd8>

@@ -1,5 +1,6 @@
 import { awscdk } from 'projen';
 import { TrailingComma } from 'projen/lib/javascript';
+
 const project = new awscdk.AwsCdkTypeScriptApp({
   cdkVersion: '2.86.0',
   defaultReleaseBranch: 'main',
@@ -15,7 +16,7 @@ const project = new awscdk.AwsCdkTypeScriptApp({
     },
   },
 
-  deps: ['@types/aws-lambda', 'langchain'],
+  deps: ['@types/aws-lambda', 'langchain', '@aws-sdk/client-secrets-manager'],
   // deps: [],                /* Runtime dependencies of this module. */
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
   // devDeps: [],             /* Build dependencies for this module. */

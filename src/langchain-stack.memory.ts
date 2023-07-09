@@ -59,14 +59,12 @@ export async function handler(
   // Get OpenAI API key from AWS Secrets Manager
   const openAIApiKey = (await client.send(command)).SecretString;
 
+  // or BufferWindowMemory with key for window
   const memory = new BufferMemory({
     chatHistory: new DynamoDBChatMessageHistory({
       tableName: TABLE_NAME,
       partitionKey: 'user',
-      // sortKey: 'timestamp',
-      // sortKey: new Date().toISOString(),
       sessionId: user,
-      // sessionId: new Date().toISOString(),
     }),
   });
 

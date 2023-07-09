@@ -1,4 +1,5 @@
 import * as core from 'aws-cdk-lib';
+import * as ddb from 'aws-cdk-lib/aws-dynamodb';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -32,5 +33,38 @@ export class LangchainStack extends core.Stack {
     });
 
     new core.CfnOutput(this, 'FunctionUrl', { value: functionUrl.url });
+
+    const langChainMemoryTable = new ddb.Table(this, 'LangChainMemoryTable', {
+      partitionKey: {
+        name: 'user',
+        type: ddb.AttributeType.STRING,
+      },
+      //   sortKey: { name: 'timestamp', type: ddb.AttributeType.STRING },
+    });
+
+    const langChainMemoryLambda = new nodejs.NodejsFunction(this, 'memory', {
+      timeout: core.Duration.seconds(30),
+      environment: {
+        OPENAI_API_KEY_SECRET_ID: openAiSecret.secretName,
+        TABLE_NAME: langChainMemoryTable.tableName,
+      },
+    });
+
+    langChainMemoryLambda.addToRolePolicy(
+      new PolicyStatement({
+        actions: ['secretsmanager:GetSecretValue'],
+        resources: [openAiSecret.secretArn],
+      }),
+    );
+
+    langChainMemoryTable.grantReadWriteData(langChainMemoryLambda);
+
+    const functionUrlMemory = langChainMemoryLambda.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
+
+    new core.CfnOutput(this, 'MemoryFunctionUrl', {
+      value: functionUrlMemory.url,
+    });
   }
 }

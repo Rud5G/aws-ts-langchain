@@ -3,11 +3,13 @@ import {
   SecretsManagerClient,
 } from '@aws-sdk/client-secrets-manager';
 import * as lambda from 'aws-lambda';
-import { LLMChain, SequentialChain } from 'langchain/chains';
+import { ConversationChain } from 'langchain/chains';
 import { OpenAI } from 'langchain/llms/openai';
+import { BufferMemory } from 'langchain/memory';
 import { PromptTemplate } from 'langchain/prompts';
+import { DynamoDBChatMessageHistory } from 'langchain/stores/message/dynamodb';
 
-const { OPENAI_API_KEY_SECRET_ID } = process.env;
+const { OPENAI_API_KEY_SECRET_ID, TABLE_NAME = '' } = process.env;
 
 const command = new GetSecretValueCommand({
   SecretId: OPENAI_API_KEY_SECRET_ID,
@@ -35,18 +37,38 @@ export async function handler(
 
   // check if properties are in the body
   const body = event.body ? JSON.parse(event.body) : undefined;
-  const { cuisine } = body;
+  const { cuisine, user } = body;
   if (!cuisine) {
     return {
       statusCode: 405,
       body: JSON.stringify({
-        message: `Missing cuisine property in json body`,
+        message: 'Missing cuisine property in json body',
+      }),
+    };
+  }
+
+  if (!user) {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({
+        message: 'Missing user property in json body',
       }),
     };
   }
 
   // Get OpenAI API key from AWS Secrets Manager
   const openAIApiKey = (await client.send(command)).SecretString;
+
+  const memory = new BufferMemory({
+    chatHistory: new DynamoDBChatMessageHistory({
+      tableName: TABLE_NAME,
+      partitionKey: 'user',
+      // sortKey: 'timestamp',
+      // sortKey: new Date().toISOString(),
+      sessionId: user,
+      // sessionId: new Date().toISOString(),
+    }),
+  });
 
   // Initialize LangChain
   const llm = new OpenAI({ temperature: 0.7, openAIApiKey });
@@ -57,45 +79,29 @@ export async function handler(
       'I want to open a restaurant for {cuisine} food. Suggest a fancy name for this',
   });
 
-  const nameChain = new LLMChain({
+  const nameChain = new ConversationChain({
     llm,
     prompt,
     outputKey: 'restaurant_name',
+    memory,
   });
 
-  const promptItems = new PromptTemplate({
-    inputVariables: ['restaurant_name'],
-    template:
-      'Suggest some menu items for {restaurant_name}. Return it as a comma-separated string',
-  });
+  const response = await nameChain.call({ cuisine });
 
-  const footItemsChain = new LLMChain({
-    llm,
-    prompt: promptItems,
-    outputKey: 'menu_items',
-  });
+  const chatHistory = await memory.chatHistory.getMessages();
 
-  const chain = new SequentialChain({
-    chains: [nameChain, footItemsChain],
-    inputVariables: ['cuisine'],
-    outputVariables: ['restaurant_name', 'menu_items'],
-  });
-
-  const response = await chain.call({ cuisine });
+  console.log(`chatHistory: ${JSON.stringify(chatHistory)}`);
 
   // cleaning the response like removing new lines
   const restaurant_name = (
     response.restaurant_name as string | undefined
   )?.replace(/  |\r\n|\n|\r/gm, '');
-  const menu_items = (response.menu_items as string | undefined)?.replace(
-    /  |\r\n|\n|\r/gm,
-    '',
-  );
 
   return {
     statusCode: 200,
     body: JSON.stringify({
-      message: { restaurant_name, menu_items },
+      message: { restaurant_name },
+      chatHistory,
     }),
   };
 }

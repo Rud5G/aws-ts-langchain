@@ -19,10 +19,43 @@ yarn cdk deploy "langchain-stack" --require-approval never
 
 After deploying you need to put your OpenAI Api Key into the AWS Secret named OpenAiKey...
 
+## First LangChain App
+
+This LangChain App chains to LLM Chains.
+
+Prompt 1: I want to open a restaurant for {cuisine} food. Suggest a fancy name for this.
+
+Prompt 2: Suggest some menu items for {restaurant_name}. Return it as a comma-separated string.
+
+```bash
+URL=https://mlmtzplhdet2ha3yvxuegcnhze0qepwh.lambda-url.us-east-1.on.aws
+curl -X POST $URL \
+    -H 'Content-type: application/json' \
+    -d '{"cuisine": "Brazil"}' | jq .
+```
+
+## Second LangChain App
+
+This LangChain App posses an AWS DynamoDB Memory.
+
+Prompt: I want to open a restaurant for {cuisine} food. Suggest a fancy name for this.
+
+```bash
+URL=https://a5ewfijwkvfgrptv7z336cnfvm0yxawl.lambda-url.us-east-1.on.aws
+curl -X POST $URL \
+    -H 'Content-type: application/json' \
+    -d '{"cuisine": "Italien", "user": "martin"}' | jq .
+```
+
+## Example queries
+
+```bash
+URL=https://mlmtzplhdet2ha3yvxuegcnhze0qepwh.lambda-url.us-east-1.on.aws
+
+
 ## What to improve
 
-* Don't save the OpenAI API Key as variable!
-* Use proper AWS Api Gateway for a proper REST API
+* Use proper AWS Api-Gateway for a proper REST API
 
 ## Thx
 

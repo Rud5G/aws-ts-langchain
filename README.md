@@ -27,6 +27,8 @@ Prompt 1: I want to open a restaurant for {cuisine} food. Suggest a fancy name f
 
 Prompt 2: Suggest some menu items for {restaurant_name}. Return it as a comma-separated string.
 
+Those two prompts are chained and will return the name for the restaurant and suggestions for menu items.
+
 ```bash
 URL=https://mlmtzplhdet2ha3yvxuegcnhze0qepwh.lambda-url.us-east-1.on.aws
 curl -X POST $URL \

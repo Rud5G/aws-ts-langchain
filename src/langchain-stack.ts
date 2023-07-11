@@ -20,6 +20,9 @@ export class LangchainStack extends core.Stack {
         OPENAI_API_KEY_SECRET_ID: openAiSecret.secretName,
       },
     });
+    const functionUrl = langChainLambda.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
 
     langChainLambda.addToRolePolicy(
       new PolicyStatement({
@@ -27,10 +30,6 @@ export class LangchainStack extends core.Stack {
         resources: [openAiSecret.secretArn],
       }),
     );
-
-    const functionUrl = langChainLambda.addFunctionUrl({
-      authType: lambda.FunctionUrlAuthType.NONE,
-    });
 
     new core.CfnOutput(this, 'FunctionUrl', { value: functionUrl.url });
 
@@ -49,6 +48,9 @@ export class LangchainStack extends core.Stack {
         TABLE_NAME: langChainMemoryTable.tableName,
       },
     });
+    const functionUrlMemory = langChainMemoryLambda.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
 
     langChainMemoryLambda.addToRolePolicy(
       new PolicyStatement({
@@ -58,10 +60,6 @@ export class LangchainStack extends core.Stack {
     );
 
     langChainMemoryTable.grantReadWriteData(langChainMemoryLambda);
-
-    const functionUrlMemory = langChainMemoryLambda.addFunctionUrl({
-      authType: lambda.FunctionUrlAuthType.NONE,
-    });
 
     new core.CfnOutput(this, 'MemoryFunctionUrl', {
       value: functionUrlMemory.url,

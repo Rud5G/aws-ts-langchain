@@ -62,3 +62,4 @@ URL=https://mlmtzplhdet2ha3yvxuegcnhze0qepwh.lambda-url.us-east-1.on.aws
 ## Thx
 
 * Thanks to codebasics to provide the Python LangChain Video which I used <https://www.youtube.com/watch?v=nAmC7SoVLd8>
+* Thanks to Coding Crashcourses for another LangChain Tutorial video helping me to understand the LangChain features https://www.youtube.com/watch?v=a89vqgK-Qcs

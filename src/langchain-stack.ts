@@ -38,7 +38,6 @@ export class LangchainStack extends core.Stack {
         name: 'user',
         type: ddb.AttributeType.STRING,
       },
-      //   sortKey: { name: 'timestamp', type: ddb.AttributeType.STRING },
     });
 
     const langChainMemoryLambda = new nodejs.NodejsFunction(this, 'memory', {
